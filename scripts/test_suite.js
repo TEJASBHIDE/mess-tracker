@@ -92,4 +92,23 @@ assert.match(defaultDoc.endDate, /^\d{4}-\d{2}-\d{2}$/)
 assert.ok(defaultDoc.createdAt, 'defaultDoc should have createdAt timestamp')
 console.log('✅ cycles.js tests passed successfully!')
 
+// Test 4: PDF generation logic
+console.log('\n--- 4. Testing pdfGenerator.js ---')
+const { generateMealSummaryPdf } = await import('../src/lib/pdfGenerator.js')
+const pdfDoc = generateMealSummaryPdf({
+  user: { displayName: 'Test Student', email: 'student@example.com' },
+  cycle: { startDate: '2026-10-01', endDate: '2026-10-31' },
+  dates: ['2026-10-01', '2026-10-02', '2026-10-03'],
+  entries: {
+    '2026-10-01': { breakfast: true, lunch: true, dinner: true },
+    '2026-10-02': { breakfast: false, lunch: true, dinner: true },
+    '2026-10-03': { breakfast: false, lunch: false, dinner: false }
+  },
+  mealPrices: [{ id: 'p1', effectiveFrom: '2026-10-01', breakfast: 40, lunch: 50, dinner: 80 }],
+  paymentConfig: { payeeName: 'Annapurna Mess', upiId: 'annapurna@okaxis', phoneNumber: '9876543210' }
+})
+assert.ok(pdfDoc, 'pdfDoc should be created')
+assert.ok(pdfDoc.getNumberOfPages() >= 1, 'PDF should have at least 1 page')
+console.log('✅ pdfGenerator tests passed successfully!')
+
 console.log('\n🎉 ALL TESTS PASSED! Zero functional regressions detected.')

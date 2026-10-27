@@ -14,7 +14,7 @@ import {
   documentId,
   onSnapshot
 } from 'firebase/firestore'
-import { db } from '../firebase'
+import { db, auth } from '../firebase'
 import {
   todayStr,
   defaultCycleFor,
@@ -30,6 +30,10 @@ import {
 } from '../lib/cycles'
 import { cycleTotal, dayTotal, mealPriceFor, hasOverride } from '../lib/calc'
 import {
+  downloadMealSummaryPdf,
+  shareMealSummaryPdf
+} from '../lib/pdfGenerator.js'
+import {
   SettingsIcon,
   EditIcon,
   WalletIcon,
@@ -41,7 +45,8 @@ import {
   ZapIcon,
   CheckCircleIcon
 } from './Icons'
-import { ChevronRight, Sparkles } from 'lucide-react'
+import { ChevronRight, Sparkles, FileText, Download, Loader2 } from 'lucide-react'
+import { FaWhatsapp } from 'react-icons/fa6'
 import { TbReceiptRupee } from 'react-icons/tb'
 import OverrideEditor from './OverrideEditor'
 
@@ -648,6 +653,57 @@ export default function Summary({ uid, onSelectDate }) {
     }
   }
 
+  const [pdfGenerating, setPdfGenerating] = useState(false)
+  const [pdfSuccess, setPdfSuccess] = useState('')
+
+  async function handleDownloadPdf() {
+    setPdfGenerating(true)
+    setPdfSuccess('')
+    try {
+      const user = auth.currentUser || { displayName: 'Student', email: '' }
+      downloadMealSummaryPdf({
+        user,
+        cycle,
+        dates: datesCache,
+        entries,
+        mealPrices,
+        paymentConfig
+      })
+      setPdfSuccess('Downloaded!')
+      setTimeout(() => setPdfSuccess(''), 3000)
+    } catch (err) {
+      console.error('Failed to download PDF:', err)
+      alert('Could not generate PDF. Please try again.')
+    } finally {
+      setPdfGenerating(false)
+    }
+  }
+
+  async function handleShareWhatsApp() {
+    setPdfGenerating(true)
+    setPdfSuccess('')
+    try {
+      const user = auth.currentUser || { displayName: 'Student', email: '' }
+      const res = await shareMealSummaryPdf({
+        user,
+        cycle,
+        dates: datesCache,
+        entries,
+        mealPrices,
+        paymentConfig
+      })
+      if (res?.success) {
+        setPdfSuccess('Shared!')
+        setTimeout(() => setPdfSuccess(''), 3000)
+      }
+    } catch (err) {
+      console.error('Failed to share PDF:', err)
+      alert('Could not share PDF. Please try again.')
+    } finally {
+      setPdfGenerating(false)
+    }
+  }
+
   return (
     <div className="px-4 pt-3 pb-8 flex flex-col justify-start">
       {/* Page Title & Date Range */}
@@ -803,6 +859,64 @@ export default function Summary({ uid, onSelectDate }) {
             <span>Set up Mess UPI to enable instant payment</span>
           </button>
         )}
+      </section>
+
+      {/* Mess Owner Bill Slip & PDF Actions */}
+      <section className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 mb-4 transition-all">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-xl bg-blue-50 text-primary flex items-center justify-center">
+              <FileText className="w-4 h-4" />
+            </div>
+            <div>
+              <h3 className="font-headline font-bold text-xs text-slate-900">
+                Mess Owner Bill Slip (PDF)
+              </h3>
+              <p className="text-[11px] text-slate-500 font-body">
+                Clean attendance register designed for quick verification
+              </p>
+            </div>
+          </div>
+          {pdfSuccess && (
+            <span className="text-[11px] font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 animate-in fade-in">
+              ✓ {pdfSuccess}
+            </span>
+          )}
+        </div>
+
+        <div className="grid grid-cols-2 gap-2.5">
+          {/* Share on WhatsApp button */}
+          <button
+            type="button"
+            onClick={handleShareWhatsApp}
+            disabled={pdfGenerating}
+            className="w-full bg-emerald-600 hover:bg-emerald-700 active:scale-98 text-white font-headline font-bold text-xs py-2.5 px-3 rounded-xl shadow-xs shadow-emerald-600/20 flex items-center justify-center gap-2 transition-all disabled:opacity-60 cursor-pointer"
+            title="Send PDF to mess owner on WhatsApp"
+          >
+            {pdfGenerating ? (
+              <Loader2 className="w-4 h-4 text-white animate-spin" />
+            ) : (
+              <FaWhatsapp className="w-4 h-4 text-white" />
+            )}
+            <span>{pdfGenerating ? 'Generating...' : 'Send on WhatsApp'}</span>
+          </button>
+
+          {/* Download PDF button */}
+          <button
+            type="button"
+            onClick={handleDownloadPdf}
+            disabled={pdfGenerating}
+            className="w-full bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 active:scale-98 font-headline font-bold text-xs py-2.5 px-3 rounded-xl shadow-2xs flex items-center justify-center gap-2 transition-all disabled:opacity-60 cursor-pointer"
+            title="Download PDF bill to device"
+          >
+            {pdfGenerating ? (
+              <Loader2 className="w-4 h-4 text-slate-500 animate-spin" />
+            ) : (
+              <Download className="w-4 h-4 text-slate-600" />
+            )}
+            <span>Download PDF</span>
+          </button>
+        </div>
       </section>
 
       {/* Billing Cycle Settings Banner / Row */}
