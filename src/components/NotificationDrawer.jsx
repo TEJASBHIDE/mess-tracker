@@ -366,7 +366,7 @@ export default function NotificationDrawer({
             >
               <span className="flex items-center gap-1.5">
                 <HelpCircle className="w-3.5 h-3.5" />
-                How to enable if blocked in browser?
+                No sound or notifications blocked?
               </span>
               <ChevronRight
                 className={`w-3.5 h-3.5 transition-transform duration-200 ${
@@ -376,14 +376,24 @@ export default function NotificationDrawer({
             </button>
 
             {showHelp && (
-              <div className="mt-2.5 p-3 rounded-xl bg-slate-50 text-slate-600 text-[11px] space-y-1.5 animate-in fade-in">
-                <p className="font-semibold text-slate-700">In Chrome / Edge (Android & Desktop):</p>
-                <ol className="list-decimal pl-4 space-y-1">
-                  <li>Tap the lock / tune icon in your browser address bar.</li>
-                  <li>Tap <span className="font-medium text-slate-800">Permissions</span> or <span className="font-medium text-slate-800">Notifications</span>.</li>
-                  <li>Switch from &quot;Block&quot; to <span className="font-medium text-emerald-600">&quot;Allow&quot;</span>.</li>
-                  <li>Refresh this page.</li>
-                </ol>
+              <div className="mt-2.5 p-3 rounded-xl bg-slate-50 text-slate-600 text-[11px] space-y-2.5 animate-in fade-in">
+                <div>
+                  <p className="font-semibold text-slate-800 mb-1">🔔 How to enable notification sound on Android:</p>
+                  <ol className="list-decimal pl-4 space-y-1 text-slate-600">
+                    <li>Long-press the <span className="font-medium text-slate-900">Mess Tracker</span> (or Chrome) icon on your home screen &rarr; tap <span className="font-medium text-slate-900">App info (ⓘ)</span>.</li>
+                    <li>Tap <span className="font-medium text-slate-900">Notifications</span> &rarr; tap <span className="font-medium text-slate-900">Notification categories</span> (or Sites).</li>
+                    <li>Find <span className="font-mono text-slate-800">mess-tracker-8ff02.web.app</span> &rarr; change from <span className="font-medium text-amber">Silent</span> to <span className="font-medium text-emerald-600">Default / Alerting</span>.</li>
+                    <li>Select your favorite notification tone/ringtone!</li>
+                  </ol>
+                </div>
+
+                <div className="pt-1.5 border-t border-slate-200/60">
+                  <p className="font-semibold text-slate-800 mb-1">🔒 If blocked in browser settings:</p>
+                  <ol className="list-decimal pl-4 space-y-1 text-slate-600">
+                    <li>Tap the tune / lock icon next to the URL in your browser bar.</li>
+                    <li>Tap <span className="font-medium text-slate-900">Permissions</span> &rarr; switch to <span className="font-medium text-emerald-600">Allow</span>.</li>
+                  </ol>
+                </div>
               </div>
             )}
           </div>

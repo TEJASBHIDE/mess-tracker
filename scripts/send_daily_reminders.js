@@ -125,6 +125,9 @@ async function run() {
             icon: 'https://mess-tracker-8ff02.web.app/logo-primary.png',
             badge: 'https://mess-tracker-8ff02.web.app/favicon.svg',
             tag: 'mess-tracker-daily-reminder',
+            silent: false,
+            renotify: true,
+            vibrate: [200, 100, 200, 100, 200],
             data: {
               url: '/?tab=today'
             }

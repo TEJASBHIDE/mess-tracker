@@ -29,7 +29,9 @@ messaging.onBackgroundMessage((payload) => {
     icon: payload.notification?.icon || '/logo-primary.png',
     badge: '/favicon.svg',
     tag: payload.data?.tag || 'mess-tracker-reminder',
-    vibrate: [200, 100, 200],
+    silent: false,
+    renotify: true,
+    vibrate: [200, 100, 200, 100, 200],
     data: {
       url: payload.data?.url || '/?tab=today'
     }
