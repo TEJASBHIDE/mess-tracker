@@ -1,0 +1,34 @@
+name: Daily 9:00 PM Meal Reminder
+
+on:
+  # Runs daily at 15:30 UTC (which is 21:00 IST / 9:00 PM Indian Standard Time)
+  schedule:
+    - cron: '30 15 * * *'
+  # Allows triggering manually anytime from the GitHub Actions dashboard for testing
+  workflow_dispatch:
+
+concurrency:
+  group: 'daily-reminder'
+  cancel-in-progress: false
+
+jobs:
+  send-reminder:
+    name: Dispatch Daily Reminders
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run Daily Reminder Dispatcher
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_MESS_TRACKER_8FF02 }}
+        run: node scripts/send_daily_reminders.js
