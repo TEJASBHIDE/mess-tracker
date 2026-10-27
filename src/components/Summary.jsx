@@ -91,6 +91,8 @@ export default function Summary({ uid, onSelectDate }) {
   const [copiedAmount, setCopiedAmount] = useState(false)
   const [qrUrl, setQrUrl] = useState('')
   const [savingPayment, setSavingPayment] = useState(false)
+  const [pdfGenerating, setPdfGenerating] = useState(false)
+  const [pdfSuccess, setPdfSuccess] = useState('')
 
   const sortedCycles = useMemo(() => sortCyclesAsc(cycles), [cycles])
   const cycle = useMemo(
@@ -652,9 +654,6 @@ export default function Summary({ uid, onSelectDate }) {
       alert(text)
     }
   }
-
-  const [pdfGenerating, setPdfGenerating] = useState(false)
-  const [pdfSuccess, setPdfSuccess] = useState('')
 
   async function handleDownloadPdf() {
     setPdfGenerating(true)
